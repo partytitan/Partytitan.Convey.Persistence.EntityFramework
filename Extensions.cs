@@ -18,20 +18,22 @@ namespace Partytitan.Convey.Persistence.EntityFramework
 
         public static IConveyBuilder AddEntityFramework<T>(this IConveyBuilder builder, string sectionName = SectionName) where T : DbContext
         {
+            var migrationsAssembly = Assembly.GetCallingAssembly().FullName;
+
             if (string.IsNullOrWhiteSpace(sectionName)) sectionName = SectionName;
 
             var entityFrameworkOptions = builder.GetOptions<EntityFrameworkOptions>(sectionName);
-            return builder.AddEntityFramework<T>(entityFrameworkOptions);
+            return builder.AddEntityFramework<T>(entityFrameworkOptions, migrationsAssembly);
         }
 
         public static IConveyBuilder AddEntityFramework<T>(this IConveyBuilder builder,
-            EntityFrameworkOptions entityFrameworkOptions) where T : DbContext
+            EntityFrameworkOptions entityFrameworkOptions, string migrationsAssembly) where T : DbContext
         {
             builder.Services.AddSingleton(entityFrameworkOptions);
             switch (entityFrameworkOptions.DatabaseType)
             {
                 case DatabaseType.SqlServer:
-                    builder.Services.RegisterSqlServerDbContext<T>(entityFrameworkOptions.ConnectionString);
+                    builder.Services.RegisterSqlServerDbContext<T>(entityFrameworkOptions.ConnectionString, migrationsAssembly);
                     break;
 
                 default:
@@ -50,11 +52,9 @@ namespace Partytitan.Convey.Persistence.EntityFramework
             return builder;
         }
 
-        private static void RegisterSqlServerDbContext<T>(this IServiceCollection services, string connectionString)
+        private static void RegisterSqlServerDbContext<T>(this IServiceCollection services, string connectionString, string migrationsAssembly)
             where T : DbContext
         {
-            var migrationsAssembly = Assembly.GetCallingAssembly().FullName;
-
             services.AddDbContext<T>(options => options.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
         }
     }
