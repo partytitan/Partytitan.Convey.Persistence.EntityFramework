@@ -19,5 +19,6 @@ namespace Partytitan.Convey.Persistence.EntityFramework.Repositories.Interfaces
         Task DeleteAsync(TIdentifiable id);
         Task DeleteAsync(TEntity entity);
         Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate);
+        Task SaveChangesAsync();
     }
 }

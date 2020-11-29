@@ -27,7 +27,7 @@ namespace Partytitan.Convey.Persistence.EntityFramework.Repositories
             => GetAsync(e => e.Id.Equals(id));
 
         public Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> predicate)
-            => Collection.AsQueryable().SingleOrDefaultAsync(predicate);
+            => Collection.AsQueryable().FirstOrDefaultAsync(predicate);
 
         public async Task<IReadOnlyList<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
             => await Collection.Where(predicate).ToListAsync();
@@ -58,5 +58,10 @@ namespace Partytitan.Convey.Persistence.EntityFramework.Repositories
 
         public Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate)
             => Collection.AnyAsync(predicate);
+
+        public async Task SaveChangesAsync()
+        { 
+            await _database.SaveChangesAsync();
+        }
     }
 }

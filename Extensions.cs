@@ -55,7 +55,10 @@ namespace Partytitan.Convey.Persistence.EntityFramework
         private static void RegisterSqlServerDbContext<T>(this IServiceCollection services, string connectionString, string migrationsAssembly)
             where T : DbContext
         {
-            services.AddDbContext<T>(options => options.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly)));
+            services.AddDbContext<T>(options =>
+            {
+                options.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+            });
         }
     }
 }
